@@ -124,6 +124,7 @@ Files with .lang extension are searched in following directories and it's subdir
 /* ./src/sensors/sds011/sds011_pl.lang */ const char INTL_SDS011_FAILED_READINGS[] PROGMEM = "Liczba braków/wszystkich odczytów z SDS (zerowana przy każdej próbie aktualizacji)";
 /* ./src/sensors/sds011/sds011_pl.lang */ const char INTL_SDS011_LCD_HDR[] PROGMEM = "SDS011 wartosci:";
 /* ./src/sensors/sds011/sds011_pl.lang */ const char INTL_SDS011_READTIME[] PROGMEM = "Czas, w którym jest dokonywany pomiar (ms)";
+/* ./src/sensors/sds011/sds011_pl.lang */ const char INTL_SDS011_SCALEPM[] PROGMEM = "Return percent of original value";
 /* ./src/sensors/sds011/sds011_pl.lang */ const char INTL_SDS011_WARMUP[] PROGMEM = "Czas pracy przed rozpoczęciem pomiaru (ms)";
 /* ./src/lang/intl_pl.lang */ const char INTL_SEND_TO[] PROGMEM = "Wysyłaj dane do {v}";
 /* ./src/lang/intl_pl.lang */ const char INTL_SEND_TO_OWN_API[] PROGMEM = "Wysyłaj dane do własnego API";

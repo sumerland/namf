@@ -8,6 +8,7 @@ namespace SDS011 {
     unsigned long SDS_error_count;
     unsigned long warmupTime = WARMUPTIME_SDS_MS;
     unsigned long readTime = READINGTIME_SDS_MS;
+    unsigned long scalePM = SCALE_SDS_PERCENT;
     unsigned long pm10Sum, pm25Sum = 0;
     unsigned readingCount = 0;
     SerialSDS channelSDS(serialSDS);
@@ -267,6 +268,7 @@ namespace SDS011 {
         setBoolVariableFromHTTP(String(F("display")), printOnLCD, SimpleScheduler::SDS011);
         setVariableFromHTTP(F("w"), warmupTime, SimpleScheduler::SDS011);
         setVariableFromHTTP(String(F("r")), readTime, SimpleScheduler::SDS011);
+        setVariableFromHTTP(F("s"), scalePM, SimpleScheduler::SDS011);
         setBoolVariableFromHTTP(F("dbg"), hardwareWatchdog, SimpleScheduler::SDS011);
 
         DynamicJsonBuffer jsonBuffer;
@@ -275,6 +277,7 @@ namespace SDS011 {
         ret[F("d")] = printOnLCD;
         ret[F("w")] = warmupTime;
         ret[F("r")] = readTime;
+        ret[F("s")] = scalePM;
         ret[F("dbg")] = hardwareWatchdog;
         return ret;
 
@@ -308,6 +311,7 @@ namespace SDS011 {
         if (printOnLCD) ret.concat(Var2JsonInt(F("d"), printOnLCD));
         addJsonIfNotDefault(ret, F("r"), READINGTIME_SDS_MS, readTime);
         addJsonIfNotDefault(ret, F("w"), WARMUPTIME_SDS_MS, warmupTime);
+        addJsonIfNotDefault(ret, F("s"), SCALE_SDS_PERCENT, scalePM);
         addJsonIfNotDefault(ret, F("dbg"), false, hardwareWatchdog);
 //        if (readTime != READINGTIME_SDS_MS) ret.concat(Var2Json(F("r"), readTime));
 //        if (warmupTime != WARMUPTIME_SDS_MS) ret.concat(Var2Json(F("w"), warmupTime));
@@ -324,6 +328,9 @@ namespace SDS011 {
         }
         if (json.containsKey(F("w"))) {
             warmupTime = json.get<unsigned long>(F("w"));
+        }
+        if (json.containsKey(F("s"))) {
+            scalePM = json.get<unsigned long>(F("s"));
         }
         if (json.containsKey(F("dbg"))) {
             hardwareWatchdog = json.get<bool>(F("dbg"));
@@ -364,8 +371,8 @@ namespace SDS011 {
     void processReadings() {
         readings++;
         if (readingCount > 0) {
-            last_value_SDS_P1 = pm10Sum / readingCount / 10.0;
-            last_value_SDS_P2 = pm25Sum / readingCount / 10.0;
+            last_value_SDS_P1 = pm10Sum / readingCount / 10.0 * scalePM / 100;
+            last_value_SDS_P2 = pm25Sum / readingCount / 10.0 * scalePM / 100;
             hwWtdgFailedReadings = 0;
         } else {
             last_value_SDS_P1 = last_value_SDS_P2 = -1;
@@ -593,6 +600,9 @@ namespace SDS011 {
 
         setHTTPVarName(name, F("w"), SimpleScheduler::SDS011);
         ret.concat(form_input(name, FPSTR(INTL_SDS011_WARMUP), String(warmupTime), 7));
+
+        setHTTPVarName(name, F("s"), SimpleScheduler::SDS011);
+        ret.concat(form_input(name, FPSTR(INTL_SDS011_SCALEPM), String(scalePM), 7));
 
         setHTTPVarName(name, F("dbg"), SimpleScheduler::SDS011);
         ret.concat(form_checkbox(name, F("Hardware restarter"), hardwareWatchdog, true));
